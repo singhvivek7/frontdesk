@@ -14,6 +14,7 @@ import {
 } from "@livekit/components-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Room, RoomEvent } from "livekit-client";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import type { ConnectionDetails } from "./api/connection-details/route";
 
@@ -51,6 +52,9 @@ export default function Page() {
 
   return (
     <main data-lk-theme="default" className="h-full grid content-center bg-[var(--lk-bg)]">
+      <Link href="/dash" className="absolute top-4 left-4">
+        Dashboard
+      </Link>
       <RoomContext.Provider value={room}>
         <div className="lk-room-container max-w-[1024px] w-[90vw] mx-auto max-h-[90vh]">
           <SimpleVoiceAssistant onConnectButtonClicked={onConnectButtonClicked} />
