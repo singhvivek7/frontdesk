@@ -27,12 +27,7 @@ load_dotenv(dotenv_path=".env.local")
 logger = logging.getLogger("voice-agent")
 
 
-my_unknown_queries = []
-
-
 def handle_unknown_query(query: str):
-    my_unknown_queries.append(query)
-    print(f"Unknown queries: {my_unknown_queries}")
     logger.info(f"Hey, I need help answering: {query}")
 
     addQuery(query)
@@ -89,9 +84,17 @@ async def entrypoint(ctx: JobContext):
     @agent.on("agent_speech_committed")
     def on_agent_speech_committed(message: llm.ChatMessage):
         if "[UNKNOWN_QUERY]" in message.content:
+            # Customize the response text
+            new_response = "Sorry, I don't know that one yet! I've logged your question and will find an answer soon. What's next?"
 
-            agent.chat_ctx.messages[-1].content = (
-                "Let me check with my supervisor and get back to you."
+            # Update the message content and chat context
+            message.content = message.content.replace("[UNKNOWN_QUERY]", new_response)
+            agent.chat_ctx.messages[-1].content = new_response
+
+            # Stop current speech and say the new response with custom TTS parameters
+            agent.say(
+                new_response,
+                allow_interruptions=True,
             )
             # Extract the actual query from the previous user message
             user_query = next(
@@ -105,14 +108,6 @@ async def entrypoint(ctx: JobContext):
 
             handle_unknown_query(user_query)
 
-            message.content = message.content.replace(
-                "[UNKNOWN_QUERY]",
-                "I don't have that information right now, but I've logged your question for follow-up.",
-            )
-            agent.chat_ctx.messages[-1].content = (
-                "Let me check with my supervisor and get back to you."
-            )
-
     agent.start(ctx.room, participant)
 
     await agent.say("Hey, how can I help you today?", allow_interruptions=True)
@@ -124,4 +119,4 @@ if __name__ == "__main__":
             entrypoint_fnc=entrypoint,
             prewarm_fnc=prewarm,
         ),
-    )
+    ),

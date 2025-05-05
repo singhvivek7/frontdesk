@@ -89,7 +89,7 @@ export default function QueriesPage() {
           <table className="min-w-full bg-white border">
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b">User ID</th>
+                <th className="py-2 px-4 border-b">ID</th>
                 <th className="py-2 px-4 border-b">Question</th>
                 <th className="py-2 px-4 border-b">Answer</th>
                 <th className="py-2 px-4 border-b">Action</th>
